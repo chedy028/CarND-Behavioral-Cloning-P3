@@ -11,7 +11,7 @@ with open ('./data/driving_log.csv') as csvfile:
 
 del(lines[0])#delete the header
 
-image = []
+images = []
 measurements = []
 for line in lines:
     for i in range(3):
@@ -19,6 +19,7 @@ for line in lines:
         filename = source_path.split('/')[-1]
         current_path = './data/IMG/' + filename # for running code in AWS
         image = cv2.imread(current_path)
+        images.append(image)
         measurement = float(line[3])
         measurements.append(measurement)
 
@@ -31,8 +32,8 @@ from keras.layers import Flatten, Dense
 
 model = Sequential()
 model.add(Flatten(input_shape=(160,320,3)))
-modeladd(Dense(1))
+model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
-model.fit(X_train, y_train, validation_split=0.2, shuffle=True)
+model.fit(X_train, y_train, validation_split=0.2, shuffle=True, nb_epoch=7)
 model.save('model.h5')
