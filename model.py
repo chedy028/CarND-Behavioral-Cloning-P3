@@ -1,7 +1,8 @@
+import pandas as pd
 import csv
 import cv2
 import numpy as np
-
+import utility
 # Load the csv file to get the figure name
 lines = []
 with open ('./data/driving_log.csv') as csvfile:
@@ -23,8 +24,13 @@ for line in lines:
         measurement = float(line[3])
         measurements.append(measurement)
 
-X_train = np.array(images)
-y_train = np.array(measurements)
+
+X_raw = np.array(images)
+y_raw = np.array(measurements)
+
+from sklearn.model_selection import train_test_split
+X_train, X_valid, y_train, y_valid = train_test_split(X_raw, y_raw, test_size = 0.2, random_state=0)
+
 
 
 from keras.models import Sequential
