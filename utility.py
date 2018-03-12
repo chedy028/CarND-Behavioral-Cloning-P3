@@ -5,7 +5,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 
-IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS = 160, 320, 3
+IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS = 66, 200, 3
 INPUT_SHAPE = (IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS)
 
 def load_image(img_dir, img_file):
@@ -17,7 +17,7 @@ def crop(image):
 
 def resize(image):
     '''Resize the image to the input shape used by the CNN'''
-    return cv2.resize(image, )
+    return cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT), cv2.INTER_AREA))
 
 def rgb2yuv(image):
     '''
@@ -81,6 +81,6 @@ def batch_generator(features, labels, batch_size):
     while True:
         for i in range(batch_size):
             index = np.random.choice(len(features), 1)
-            batch_features[i] = features[index]
+            batch_features[i] = preprocess(features[index])
             batch_labels[i] = labels[index]
         yield batch_features, batch_labels
