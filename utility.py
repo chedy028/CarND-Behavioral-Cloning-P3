@@ -17,7 +17,7 @@ def crop(image):
 
 def resize(image):
     '''Resize the image to the input shape used by the CNN'''
-    return cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT), cv2.INTER_AREA))
+    return cv2.resize(image, INPUT_SHAPE)
 
 def rgb2yuv(image):
     '''
