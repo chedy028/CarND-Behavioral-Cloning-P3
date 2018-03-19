@@ -1,69 +1,9 @@
-import cv2
-import csv
-import numpy as np
-import os
 
-def getLinesFromDrivingLogs(dataPath, skipHeader=False):
-    """
-    Returns the lines from a driving log with base directory `dataPath`.
-    If the file include headers, pass `skipHeader=True`.
-    """
-    lines = []
-    with open(dataPath + '/driving_log.csv') as csvFile:
-        reader = csv.reader(csvFile)
-        if skipHeader:
-            next(reader, None)
-        for line in reader:
-            lines.append(line)
-    del (lines[0])
-    return lines
-
-
-def findImages(dataPath):
-    """
-    Finds all the images needed for training on the path `dataPath`.
-    Returns `([centerPaths], [leftPath], [rightPath], [measurement])`
-    """
-    directories = [x[0] for x in os.walk(dataPath)]
-    dataDirectories = list(filter(lambda directory: os.path.isfile(directory + '/driving_log.csv'), directories))
-    centerTotal = []
-    leftTotal = []
-    rightTotal = []
-    measurementTotal = []
-    for directory in dataDirectories:
-        lines = getLinesFromDrivingLogs(directory)
-        center = []
-        left = []
-        right = []
-        measurements = []
-        for line in lines:
-            measurements.append(float(line[3]))
-            center.append(directory + '/' + line[0].strip())
-            left.append(directory + '/' + line[1].strip())
-            right.append(directory + '/' + line[2].strip())
-        centerTotal.extend(center)
-        leftTotal.extend(left)
-        rightTotal.extend(right)
-        measurementTotal.extend(measurements)
-
-    return (centerTotal, leftTotal, rightTotal, measurementTotal)
-
-def combineImages(center, left, right, measurement, correction):
-    """
-    Combine the image paths from `center`, `left` and `right` using the correction factor `correction`
-    Returns ([imagePaths], [measurements])
-    """
-    imagePaths = []
-    imagePaths.extend(center)
-    imagePaths.extend(left)
-    imagePaths.extend(right)
-    measurements = []
-    measurements.extend(measurement)
-    measurements.extend([x + correction for x in measurement])
-    measurements.extend([x - correction for x in measurement])
-    return (imagePaths, measurements)
-
-import sklearn
+from keras.models import Sequential, Model
+from keras.layers import Flatten, Dense, Lambda, Convolution2D, Cropping2D
+from keras.layers.pooling import MaxPooling2D
+import matplotlib.pyplot as plt
+from utility import getimage, combineImages
 
 def generator(samples, batch_size=32):
     """
@@ -92,10 +32,7 @@ def generator(samples, batch_size=32):
             outputs = np.array(angles)
             yield sklearn.utils.shuffle(inputs, outputs)
 
-from keras.models import Sequential, Model
-from keras.layers import Flatten, Dense, Lambda, Convolution2D, Cropping2D
-from keras.layers.pooling import MaxPooling2D
-import matplotlib.pyplot as plt
+
 
 def createPreProcessingLayers():
     """
@@ -125,7 +62,7 @@ def nVidiaModel():
 
 
 # Reading images locations.
-centerPaths, leftPaths, rightPaths, measurements = findImages('data')
+centerCamera, leftCamera, rightCamera, measurements = getimage('data')
 imagePaths, measurements = combineImages(centerPaths, leftPaths, rightPaths, measurements, 0.2)
 print('Total Images: {}'.format( len(imagePaths)))
 
