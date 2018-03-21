@@ -5,9 +5,7 @@ import os
 import sklearn
 
 def getdata(path):
-    """
-    get list of data from driving_log csv
-    """
+
     lines = []
     with open(path + '/driving_log.csv') as csvFile:
         reader = csv.reader(csvFile)
@@ -18,10 +16,7 @@ def getdata(path):
 
 
 def getimage(path):
-    """
-    Finds all the images needed for training on the path `dataPath`.
-    Returns `([centerPaths], [leftPath], [rightPath], [measurement])`
-    """
+
     directories = [x[0] for x in os.walk(path)]
     data = list(filter(lambda directory: os.path.isfile(directory + '/driving_log.csv'), directories))
     centerCamera = []
@@ -46,11 +41,8 @@ def getimage(path):
 
     return centerCamera, leftCamera, rightCamera, measurement
 
-def combineImages(center, left, right, measurement, correction):
-    """
-    Combine the image paths from `center`, `left` and `right` using the correction factor `correction`
-    Returns ([imagePaths], [measurements])
-    """
+def combineimages(center, left, right, measurement, correction):
+
     image = []
     image.extend(center)
     image.extend(left)
@@ -60,3 +52,26 @@ def combineImages(center, left, right, measurement, correction):
     measurements.extend([x + correction for x in measurement])
     measurements.extend([x - correction for x in measurement])
     return (image, measurements)
+
+def generator(samples, batch_size=32):
+    num_samples = len(samples)
+    while 1: # Loop forever so the generator never terminates
+        samples = sklearn.utils.shuffle(samples)
+        for offset in range(0, num_samples, batch_size):
+            batch_samples = samples[offset:offset+batch_size]
+
+            images = []
+            angles = []
+            for imagePath, measurement in batch_samples:
+                originalImage = cv2.imread(imagePath)
+                image = cv2.cvtColor(originalImage, cv2.COLOR_BGR2RGB)
+                images.append(image)
+                angles.append(measurement)
+                # Flipping
+                images.append(cv2.flip(image,1))
+                angles.append(measurement*-1.0)
+
+            # trim image to only see section with road
+            inputs = np.array(images)
+            outputs = np.array(angles)
+            yield sklearn.utils.shuffle(inputs, outputs)
