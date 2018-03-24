@@ -72,12 +72,11 @@ After the collection process, I had 24108 number of data points. I then preproce
 
 I finally randomly shuffled the data set and put 20% of the data into a validation set.
 
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was 5 as evidenced by validation and training loss diagram. The final solution diagram can be seen below:
+I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was 3 as evidenced by validation and training loss diagram. 
 
-![](http://i.imgur.com/lhaRuTj.jpg)
 
  I used an adam optimizer so that manually training the learning rate wasn't necessary.
 
 The optimal batch size is 32 since any larger value results in more epochs and different model architecture.
 
-Please see the mp4 file for the final video. 
+Please see the mp4 file for the final video.
