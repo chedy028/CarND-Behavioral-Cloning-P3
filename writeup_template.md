@@ -57,16 +57,27 @@ I used the data provided by udacity this time
 
 ![](https://i.imgur.com/oYWRvgQ.jpg)
 
-To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
+To augment the data sat, I also used multiple cameras (left and right cameras) and i adjusted the steering angle accordingly. Some images from the left and right cameras can be seen below:
 
-![alt text][image6]
-![alt text][image7]
-
-Etc ....
-
-After the collection process, I had X number of data points. I then preprocessed this data by ...
+![](https://i.imgur.com/AwHehoB.jpg)
+![Imgur](https://i.imgur.com/XLpH10Q.jpg)
 
 
-I finally randomly shuffled the data set and put Y% of the data into a validation set.
+The preprocessing is being conducted in the model network with two layers:
 
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by ... I used an adam optimizer so that manually training the learning rate wasn't necessary.
+- Normalizing image with mean value 0 and boundaries: -0.5 to 0.5
+- Cropping image (70 pixels from top and 25 from bottom)
+After the collection process, I had 24108 number of data points. I then preprocessed this data by creating 24108 training samples and 4822 validation samples.
+
+
+I finally randomly shuffled the data set and put 20% of the data into a validation set.
+
+I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was 5 as evidenced by validation and training loss diagram. The final solution diagram can be seen below:
+
+![](http://i.imgur.com/lhaRuTj.jpg)
+
+ I used an adam optimizer so that manually training the learning rate wasn't necessary.
+
+The optimal batch size is 32 since any larger value results in more epochs and different model architecture.
+
+Please see the mp4 file for the final video. 
